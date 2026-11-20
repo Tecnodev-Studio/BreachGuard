@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1020">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="BreachGuard: privacy-conscious email and password breach exposure checker.">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://api.pwnedpasswords.com https://api.xposedornot.com; manifest-src 'self'; worker-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="styles.css">
+<title>BreachGuard</title>
+<script type="module" src="app.js"></script>
+</head>
+<body>
+<svg class="sprite" aria-hidden="true" focusable="false" width="0" height="0">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></symbol>
+  <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16 7l3 3"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5"/></symbol>
+</svg>
+
+<noscript><p class="noscript">BreachGuard needs JavaScript to run. It has no server and sends nothing until you start a check.</p></noscript>
+
+<div id="offlineBanner" class="offline-banner" role="status" hidden data-i18n="offlineBanner"></div>
+
+<header class="topbar">
+  <svg class="logo" viewBox="0 0 128 128" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7c5cff"/><stop offset="1" stop-color="#14b8c8"/></linearGradient></defs><path d="M64 8 108 26v34c0 28-18 47-44 58C38 107 20 88 20 60V26z" fill="url(#lg)"/><path d="m44 62 14 14 27-30" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <div class="brand"><b data-i18n="appName"></b><small data-i18n="tagline"></small></div>
+  <span class="pill" data-i18n="pillNoAccount"></span>
+  <button id="langBtn" class="ghost" type="button" data-i18n="langButton" data-i18n-aria="langAria"></button>
+</header>
+
+<main>
+  <section id="dashboard" class="view">
+    <small class="eyebrow" data-i18n="dashEyebrow"></small>
+    <h1 data-i18n="dashTitle"></h1>
+    <p class="lead" data-i18n="dashIntro"></p>
+
+    <div class="card">
+      <h2 data-i18n="dashStatus"></h2>
+      <dl class="status-grid">
+        <div><dt data-i18n="stEmail"></dt><dd><span id="st-email" class="status idle"></span></dd></div>
+        <div><dt data-i18n="stPassword"></dt><dd><span id="st-password" class="status idle"></span></dd></div>
+        <div><dt data-i18n="stConnection"></dt><dd><span id="st-connection" class="status idle"></span></dd></div>
+        <div><dt data-i18n="stContext"></dt><dd><span id="st-context" class="status idle"></span></dd></div>
+      </dl>
+      <p class="fine" data-i18n="dashStatusNote"></p>
+      <div class="cta-row">
+        <button type="button" class="primary" data-goto="email" data-i18n="goEmail"></button>
+        <button type="button" class="secondary" data-goto="password" data-i18n="goPassword"></button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="recTitle"></h2>
+      <ul class="check-list">
+        <li data-i18n="rec1"></li><li data-i18n="rec2"></li><li data-i18n="rec3"></li><li data-i18n="rec4"></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="meaningTitle"></h2>
+      <ul>
+        <li data-i18n="meaningFound"></li><li data-i18n="meaningNot"></li><li data-i18n="meaningFail"></li>
+      </ul>
+    </div>
+
+    <div class="card privacy">
+      <h2 data-i18n="privTitle"></h2>
+      <ul>
+        <li data-i18n="priv1"></li><li data-i18n="priv2"></li><li data-i18n="priv3"></li><li data-i18n="priv4"></li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="email" class="view hidden">
+    <h2 class="view-title" data-i18n="tabEmail"></h2>
+    <div class="card">
+      <label for="emailInput" data-i18n="emailLabel"></label>
+      <input id="emailInput" type="email" inputmode="email" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="254" placeholder="name@example.com">
+      <p class="hint" data-i18n="emailHint"></p>
+      <label class="check"><input id="emailConsent" type="checkbox"><span data-i18n="emailConsent"></span></label>
+      <button id="emailBtn" type="button" class="primary" data-i18n="emailButton"></button>
+      <div id="emailResult" class="result hidden" role="status" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section id="password" class="view hidden">
+    <h2 class="view-title" data-i18n="tabPassword"></h2>
+    <div class="card">
+      <label for="passwordInput" data-i18n="pwLabel"></label>
+      <div class="field-row">
+        <input id="passwordInput" type="password" autocomplete="new-password" autocapitalize="none" spellcheck="false" maxlength="1024" data-i18n-placeholder="pwPlaceholder">
+        <button id="pwToggle" type="button" class="ghost" aria-pressed="false" aria-controls="passwordInput"></button>
+      </div>
+      <p class="hint" data-i18n="pwHint"></p>
+      <button id="passwordBtn" type="button" class="primary" data-i18n="pwButton"></button>
+      <div id="passwordResult" class="result hidden" role="status" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section id="sources" class="view hidden">
+    <h2 class="view-title" data-i18n="srcTitle"></h2>
+    <p class="lead" data-i18n="srcIntro"></p>
+    <div id="sourceList"></div>
+  </section>
+
+  <section id="learn" class="view hidden">
+    <h2 class="view-title" data-i18n="learnTitle"></h2>
+    <p class="lead" data-i18n="learnIntro"></p>
+    <div id="learnList"></div>
+  </section>
+
+  <footer id="footerText"></footer>
+</main>
+
+<nav class="tabs" data-i18n-aria="navAria">
+  <button type="button" class="tab active" data-view="dashboard" aria-current="page"><svg class="ico" aria-hidden="true"><use href="#i-home"/></svg><span data-i18n="tabDashboard"></span></button>
+  <button type="button" class="tab" data-view="email"><svg class="ico" aria-hidden="true"><use href="#i-mail"/></svg><span data-i18n="tabEmail"></span></button>
+  <button type="button" class="tab" data-view="password"><svg class="ico" aria-hidden="true"><use href="#i-key"/></svg><span data-i18n="tabPassword"></span></button>
+  <button type="button" class="tab" data-view="sources"><svg class="ico" aria-hidden="true"><use href="#i-link"/></svg><span data-i18n="tabSources"></span></button>
+  <button type="button" class="tab" data-view="learn"><svg class="ico" aria-hidden="true"><use href="#i-book"/></svg><span data-i18n="tabLearn"></span></button>
+</nav>
+</body>
+</html>
