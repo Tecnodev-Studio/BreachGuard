@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@capacitor/android": "7.4.0",
-    "@capacitor/core": "7.4.0"
+    "@capacitor/core": "8.6.2"
   },
   "devDependencies": {
     "@capacitor/cli": "7.4.0"
