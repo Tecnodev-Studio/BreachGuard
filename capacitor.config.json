@@ -1,0 +1,14 @@
+{
+  "appId": "com.tecnodev.breachguard",
+  "appName": "BreachGuard",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https",
+    "cleartext": false
+  },
+  "android": {
+    "allowMixedContent": false,
+    "webContentsDebuggingEnabled": false,
+    "backgroundColor": "#0b1020"
+  }
+}
